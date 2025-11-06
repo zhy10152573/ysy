@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>致我的专属偏爱</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fef7fb 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        /* 容器样式 */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 30px;
+            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* 标题样式 */
+        .container h1 {
+            color: #d63384;
+            font-size: 32px;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+        }
+        .container h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #d63384, transparent);
+        }
+        /* 密码框样式 */
+        .pwd-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+        #pwdInput {
+            padding: 15px 25px;
+            font-size: 18px;
+            border: 2px solid #f0c0d6;
+            border-radius: 50px;
+            width: 65%;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        #pwdInput:focus {
+            border-color: #d63384;
+            box-shadow: 0 0 10px rgba(214, 51, 132, 0.1);
+        }
+        #unlockBtn {
+            padding: 15px 30px;
+            background: linear-gradient(90deg, #d63384, #e85d92);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.2);
+        }
+        #unlockBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.3);
+            background: linear-gradient(90deg, #c22568, #d63384);
+        }
+        /* 底部文案 */
+        .footer-text {
+            color: #999;
+            font-size: 14px;
+            margin-top: 50px;
+            opacity: 0.8;
+        }
+        /* 弹窗样式（自定义弹窗，比默认alert高级） */
+        .custom-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 80%;
+            text-align: center;
+        }
+        .custom-alert.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .alert-content {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+        .alert-btn {
+            padding: 12px 25px;
+            background: #d63384;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .alert-btn:hover {
+            background: #c22568;
+            transform: translateY(-2px);
+        }
+        /* 背景装饰元素 */
+        .decor {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(240, 192, 214, 0.1);
+            z-index: 0;
+        }
+        .decor1 {
+            top: -50px;
+            left: -50px;
+        }
+        .decor2 {
+            bottom: -30px;
+            right: -30px;
+        }
+        /* 爱心动画（弹窗时显示） */
+        .heart {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: #d63384;
+            transform: rotate(45deg);
+            z-index: 999;
+            animation: float 3s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes float {
+            0% {
+                opacity: 0.8;
+                transform: rotate(45deg) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: rotate(45deg) translateY(-100px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 背景装饰 -->
+        <div class="decor decor1"></div>
+        <div class="decor decor2"></div>
+        
+        <h1>🔐 专属于阳思源宝贝</h1>
+        <div class="pwd-group">
+            <input type="password" id="pwdInput" placeholder="输入只有你知道的密码～" autocomplete="off">
+            <button id="unlockBtn" onclick="checkPassword()">解锁心意</button>
+        </div>
+        <div class="footer-text">
+            偷偷告诉你：密码是我们的重要日子～
+        </div>
+    </div>
+
+    <!-- 自定义弹窗 -->
+    <div class="custom-alert" id="customAlert">
+        <div class="alert-content" id="alertContent"></div>
+        <button class="alert-btn" onclick="closeAlert()">收下心意</button>
+    </div>
+
+    <script>
+        // 1. 配置密码（可修改为你们的纪念日/特殊数字，比如5201314、初次见面日期）
+        const correctPwd = "20250501"; // 示例密码，记得改成你们的专属密码！
+
+        // 2. 暖心消息列表（可自定义修改，越多弹窗越有惊喜）
+        const loveMessages = [
+            "宝贝～ 当你解锁这一刻，我又在想你～",
+            "今天有没有好好吃饭？一定要吃正餐哦～",
+            "遇到不开心的事，一定要第一时间告诉我哟～",
+            "你笑起来的时候，整个世界都亮了，要多笑一笑呀～",
+            "和你在一起的每一秒，都值得我用心珍藏～",
+            "我最近老是朝你发脾气，我会好好控制自己反思自己的，对不起宝贝",
+            "你就是最完美的，世界上最最最漂亮的美人～",
+            "记得少熬夜，早点休息，我会在梦里偷偷见你～",
+            "最后想对你说：我爱你，不止今天，是朝朝夕夕～"
+        ];
+
+        // 3. 全局元素
+        const pwdInput = document.getElementById("pwdInput");
+        const customAlert = document.getElementById("customAlert");
+        const alertContent = document.getElementById("alertContent");
+        let messageIndex = 0;
+
+        // 4. 密码验证
+        function checkPassword() {
+            const pwd = pwdInput.value.trim();
+            if (!pwd) {
+                showAlert("为啥不输密码!");
+                return;
+            }
+            if (pwd === correctPwd) {
+                // 密码正确，开始依次弹出消息
+                pwdInput.disabled = true;
+                document.getElementById("unlockBtn").disabled = true;
+                showNextMessage();
+            } else {
+                showAlert("密码不对，我恨你");
+                // 密码错误时轻微抖动输入框
+                pwdInput.style.animation = "shake 0.5s ease";
+                setTimeout(() => pwdInput.style.animation = "", 500);
+            }
+        }
+
+        // 5. 显示下一条消息
+        function showNextMessage() {
+            if (messageIndex < loveMessages.length) {
+                showAlert(loveMessages[messageIndex]);
+                createHearts(); // 弹出消息时生成爱心动画
+                messageIndex++;
+            } else {
+                // 所有消息显示完毕
+                showAlert("💖 心意已送达～ 我的宝贝，有你真好～");
+            }
+        }
+
+        // 6. 显示自定义弹窗
+        function showAlert(content) {
+            alertContent.innerText = content;
+            customAlert.classList.add("active");
+        }
+
+        // 7. 关闭弹窗（并加载下一条）
+        function closeAlert() {
+            customAlert.classList.remove("active");
+            // 延迟0.5秒加载下一条，提升体验
+            setTimeout(() => {
+                if (messageIndex < loveMessages.length) {
+                    showNextMessage();
+                }
+            }, 500);
+        }
+
+        // 8. 生成爱心动画
+        function createHearts() {
+            const count = 5; // 每次生成5个爱心
+            for (let i = 0; i < count; i++) {
+                const heart = document.createElement("div");
+                heart.className = "heart";
+                // 随机位置
+                heart.style.left = `${Math.random() * 100}vw`;
+                // 随机大小
+                const size = 10 + Math.random() * 20;
+                heart.style.width = `${size}px`;
+                heart.style.height = `${size}px`;
+                // 随机颜色深浅
+                const opacity = 0.5 + Math.random() * 0.5;
+                heart.style.background = `rgba(214, 51, 132, ${opacity})`;
+                // 随机动画延迟
+                heart.style.animationDelay = `${Math.random() * 1}s`;
+                document.body.appendChild(heart);
+                // 动画结束后移除爱心元素
+                setTimeout(() => {
+                    heart.remove();
+                }, 3000);
+            }
+        }
+
+        // 9. 输入密码后按回车可直接解锁
+        pwdInput.addEventListener("keyup", (e) => {
+            if (e.key === "Enter") {
+                checkPassword();
+            }
+        });
+
+        // 10. 抖动动画（密码错误时用）
+        const style = document.createElement("style");
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                20%, 60% { transform: translateX(-10px); }
+                40%, 80% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
